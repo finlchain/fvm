@@ -6,6 +6,10 @@
  * @version 1.0
  */
 
+// Refer to : 
+//    https://github.com/bcoin-org/bcrypto/issues/7
+//    https://stackoverflow.com/questions/47114090/what-does-an-empty-maybelocal-mean
+
 #include <string>
 #include <iostream>
 #include <bitset>
@@ -69,11 +73,11 @@ void curlHttpGet(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string url = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string fields = std::string(*param2);
 
         //
@@ -81,8 +85,18 @@ void curlHttpGet(const FunctionCallbackInfo<Value> &args)
 
         if (ret.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnRet = String::NewFromUtf8(isolate, ret.c_str());
-            args.GetReturnValue().Set(returnRet);
+            // Local<String> returnRet = String::NewFromUtf8(isolate, ret.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnRet);
+            Local<String> returnRet;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, ret.c_str());
+            if (temp.ToLocal(&returnRet))
+            {
+                args.GetReturnValue().Set(returnRet);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -104,11 +118,11 @@ void curlHttpPost(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string url = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string fields = std::string(*param2);
 
         //
@@ -116,8 +130,18 @@ void curlHttpPost(const FunctionCallbackInfo<Value> &args)
 
         if (ret.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnRet = String::NewFromUtf8(isolate, ret.c_str());
-            args.GetReturnValue().Set(returnRet);
+            // Local<String> returnRet = String::NewFromUtf8(isolate, ret.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnRet);
+            Local<String> returnRet;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, ret.c_str());
+            if (temp.ToLocal(&returnRet))
+            {
+                args.GetReturnValue().Set(returnRet);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -140,19 +164,19 @@ void ecR1KeyGenPemWithMnemonic(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param3);
 
         //
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param4);
 
         uint32_t rand_num = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
@@ -178,15 +202,15 @@ void ecR1KeyGenPemWithMnemonicOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param3);
 
         //
@@ -210,7 +234,7 @@ void ecR1KeyGenPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
@@ -233,13 +257,13 @@ void ecdsaR1VerifyHex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string sig_r = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string sig_s = std::string(*param3);      
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string comp_pubkey = std::string(*param4);
 
         //
@@ -263,9 +287,9 @@ void ecdsaR1SignHex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey = std::string(*param2);
 
         //
@@ -273,8 +297,18 @@ void ecdsaR1SignHex(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -295,9 +329,9 @@ void ecdsaR1SignPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_path = std::string(*param2);
 
         //
@@ -305,8 +339,18 @@ void ecdsaR1SignPem(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -329,19 +373,19 @@ void ecK1KeyGenPemWithMnemonic(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param3);
 
         //
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param4);
 
         uint32_t rand_num = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
@@ -367,15 +411,15 @@ void ecK1KeyGenPemWithMnemonicOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param3);
 
         //
@@ -399,7 +443,7 @@ void ecK1KeyGenPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
@@ -422,13 +466,13 @@ void ecdsaK1Verify(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string sig_r = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string sig_s = std::string(*param3);
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string comp_pubkey = std::string(*param4);
 
         //
@@ -451,9 +495,9 @@ void ecdsaK1SignHex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey = std::string(*param2);
 
         //
@@ -461,8 +505,18 @@ void ecdsaK1SignHex(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -483,9 +537,9 @@ void ecdsaK1SignPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_path = std::string(*param2);
 
         //
@@ -493,8 +547,18 @@ void ecdsaK1SignPem(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -518,19 +582,19 @@ void ed25519KeyGenPemWithMnemonic(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param3);
 
         //
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param4);
 
         uint32_t rand_num = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
@@ -556,15 +620,15 @@ void ed25519KeyGenPemWithMnemonicOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param3);
 
         //
@@ -589,7 +653,7 @@ void ed25519KeyGenPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
@@ -613,7 +677,7 @@ void ed25519KeyGenPemPubkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
@@ -637,16 +701,16 @@ void ed25519KeyGenFinWithMnemonic(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param3);
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param4);
         uint32_t rand_num = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
-        v8::String::Utf8Value param6(isolate, args[5]->ToString());
+        v8::String::Utf8Value param6(isolate, args[5]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param6);
         uint32_t seed_len = args[6]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -671,13 +735,13 @@ void ed25519KeyGenFinWithMnemonicOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param3);
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param4);
         uint32_t seed_len = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -702,9 +766,9 @@ void ed25519KeyGenFin(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param2);
         uint32_t seed_len = args[2]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -729,11 +793,11 @@ void eddsaVerifyHex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string signature = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pubkey = std::string(*param3);
 
         //
@@ -757,9 +821,9 @@ void eddsaSignHex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey = std::string(*param2);
 
         //
@@ -767,8 +831,18 @@ void eddsaSignHex(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -789,9 +863,9 @@ void eddsaSignPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prvkeyPath = std::string(*param2);
 
         //
@@ -799,8 +873,18 @@ void eddsaSignPem(const FunctionCallbackInfo<Value> &args)
 
         if (signature.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str());
-            args.GetReturnValue().Set(returnSig);
+            // Local<String> returnSig = String::NewFromUtf8(isolate, signature.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSig);
+            Local<String> returnSig;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, signature.c_str());
+            if (temp.ToLocal(&returnSig))
+            {
+                args.GetReturnValue().Set(returnSig);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -822,7 +906,7 @@ void ecK1GetPrikey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_path = std::string(*param1);
 
         //
@@ -830,8 +914,18 @@ void ecK1GetPrikey(const FunctionCallbackInfo<Value> &args)
 
         if (prikey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str());
-            args.GetReturnValue().Set(retPrikey);
+            // Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPrikey);
+            Local<String> retPrikey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, prikey.c_str());
+            if (temp.ToLocal(&retPrikey))
+            {
+                args.GetReturnValue().Set(retPrikey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -852,7 +946,7 @@ void ecK1GetPubkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pubkey_path = std::string(*param1);
 
         //
@@ -860,8 +954,18 @@ void ecK1GetPubkey(const FunctionCallbackInfo<Value> &args)
 
         if (pubkey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str());
-            args.GetReturnValue().Set(retPubkey);
+            // Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPubkey);
+            Local<String> retPubkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, pubkey.c_str());
+            if (temp.ToLocal(&retPubkey))
+            {
+                args.GetReturnValue().Set(retPubkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -883,7 +987,7 @@ void ecR1GetPrikey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_path = std::string(*param1);
 
         //
@@ -891,8 +995,18 @@ void ecR1GetPrikey(const FunctionCallbackInfo<Value> &args)
 
         if (prikey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str());
-            args.GetReturnValue().Set(retPrikey);
+            // Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPrikey);
+            Local<String> retPrikey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, prikey.c_str());
+            if (temp.ToLocal(&retPrikey))
+            {
+                args.GetReturnValue().Set(retPrikey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -913,7 +1027,7 @@ void ecR1GetPubkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pubkey_path = std::string(*param1);
 
         //
@@ -921,8 +1035,18 @@ void ecR1GetPubkey(const FunctionCallbackInfo<Value> &args)
 
         if (pubkey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str());
-            args.GetReturnValue().Set(retPubkey);
+            // Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPubkey);
+            Local<String> retPubkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, pubkey.c_str());
+            if (temp.ToLocal(&retPubkey))
+            {
+                args.GetReturnValue().Set(retPubkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -944,7 +1068,7 @@ void ed25519GetPrikeyByPemStr(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pem_str = std::string(*param1);
 
         //
@@ -952,8 +1076,18 @@ void ed25519GetPrikeyByPemStr(const FunctionCallbackInfo<Value> &args)
 
         if (prikey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str());
-            args.GetReturnValue().Set(retPrikey);
+            // Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPrikey);
+            Local<String> retPrikey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, prikey.c_str());
+            if (temp.ToLocal(&retPrikey))
+            {
+                args.GetReturnValue().Set(retPrikey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -975,7 +1109,7 @@ void ed25519GetPrikey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_path = std::string(*param1);
 
         //
@@ -983,8 +1117,18 @@ void ed25519GetPrikey(const FunctionCallbackInfo<Value> &args)
 
         if (prikey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str());
-            args.GetReturnValue().Set(retPrikey);
+            // Local<String> retPrikey = String::NewFromUtf8(isolate, prikey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPrikey);
+            Local<String> retPrikey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, prikey.c_str());
+            if (temp.ToLocal(&retPrikey))
+            {
+                args.GetReturnValue().Set(retPrikey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1005,7 +1149,7 @@ void ed25519GetPubkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pubkey_path = std::string(*param1);
 
         //
@@ -1013,8 +1157,18 @@ void ed25519GetPubkey(const FunctionCallbackInfo<Value> &args)
 
         if (pubkey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str());
-            args.GetReturnValue().Set(retPubkey);
+            // Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPubkey);
+            Local<String> retPubkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, pubkey.c_str());
+            if (temp.ToLocal(&retPubkey))
+            {
+                args.GetReturnValue().Set(retPubkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1038,19 +1192,19 @@ void x25519KeyGenPemWithMnemonic(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param3);
 
         //
-        v8::String::Utf8Value param4(isolate, args[3]->ToString());
+        v8::String::Utf8Value param4(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param4);
 
         uint32_t rand_num = args[4]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
@@ -1076,15 +1230,15 @@ void x25519KeyGenPemWithMnemonicOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param2);
 
         //
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param3);
 
         //
@@ -1108,7 +1262,7 @@ void x25519KeyGenPem(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string path = std::string(*param1);
 
         //
@@ -1132,9 +1286,9 @@ void x25519HexSkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_hex = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
 
         //
@@ -1142,8 +1296,18 @@ void x25519HexSkey(const FunctionCallbackInfo<Value> &args)
 
         if (skey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str());
-            args.GetReturnValue().Set(returnSkey);
+            // Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSkey);
+            Local<String> returnSkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, skey.c_str());
+            if (temp.ToLocal(&returnSkey))
+            {
+                args.GetReturnValue().Set(returnSkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1165,9 +1329,9 @@ void x25519PemSkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_pem = std::string(*param2);
 
         //
@@ -1175,8 +1339,18 @@ void x25519PemSkey(const FunctionCallbackInfo<Value> &args)
 
         if (skey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str());
-            args.GetReturnValue().Set(returnSkey);
+            // Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSkey);
+            Local<String> returnSkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, skey.c_str());
+            if (temp.ToLocal(&returnSkey))
+            {
+                args.GetReturnValue().Set(returnSkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1198,9 +1372,9 @@ void x25519MixSkey(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
 
         //
@@ -1208,8 +1382,18 @@ void x25519MixSkey(const FunctionCallbackInfo<Value> &args)
 
         if (skey.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str());
-            args.GetReturnValue().Set(returnSkey);
+            // Local<String> returnSkey = String::NewFromUtf8(isolate, skey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnSkey);
+            Local<String> returnSkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, skey.c_str());
+            if (temp.ToLocal(&returnSkey))
+            {
+                args.GetReturnValue().Set(returnSkey);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1231,11 +1415,11 @@ void x25519HexEnc(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_hex = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string plaintext_hex = std::string(*param3);
         uint32_t plaintext_hex_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1244,8 +1428,18 @@ void x25519HexEnc(const FunctionCallbackInfo<Value> &args)
 
         if (encMsg.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str());
-            args.GetReturnValue().Set(returnEncMsg);
+            // Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnEncMsg);
+            Local<String> returnEncMsg;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, encMsg.c_str());
+            if (temp.ToLocal(&returnEncMsg))
+            {
+                args.GetReturnValue().Set(returnEncMsg);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1267,11 +1461,11 @@ void x25519HexDec(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_hex = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string enc_msg_str = std::string(*param3);
         uint32_t enc_msg_str_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1280,8 +1474,18 @@ void x25519HexDec(const FunctionCallbackInfo<Value> &args)
 
         if (plaintext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnPlainText = String::NewFromUtf8(isolate, plaintext.c_str());
-            args.GetReturnValue().Set(returnPlainText);
+            // Local<String> returnPlainText = String::NewFromUtf8(isolate, plaintext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnPlainText);
+            Local<String> returnPlainText;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, plaintext.c_str());
+            if (temp.ToLocal(&returnPlainText))
+            {
+                args.GetReturnValue().Set(returnPlainText);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1303,11 +1507,11 @@ void x25519PemEnc(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_pem = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string plaintext_hex = std::string(*param3);
         uint32_t plaintext_hex_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1316,8 +1520,18 @@ void x25519PemEnc(const FunctionCallbackInfo<Value> &args)
 
         if (encMsg.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str());
-            args.GetReturnValue().Set(returnEncMsg);
+            // Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str()).();
+            // args.GetReturnValue().Set(returnEncMsg);
+            Local<String> returnEncMsg;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, encMsg.c_str());
+            if (temp.ToLocal(&returnEncMsg))
+            {
+                args.GetReturnValue().Set(returnEncMsg);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1339,11 +1553,11 @@ void x25519PemDec(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_pem = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string enc_msg_str = std::string(*param3);
         uint32_t enc_msg_str_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1352,8 +1566,18 @@ void x25519PemDec(const FunctionCallbackInfo<Value> &args)
 
         if (plaintext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str());
-            args.GetReturnValue().Set(returnPlaintext);
+            // Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnPlaintext);
+            Local<String> returnPlainText;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, plaintext.c_str());
+            if (temp.ToLocal(&returnPlainText))
+            {
+                args.GetReturnValue().Set(returnPlainText);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1375,11 +1599,11 @@ void x25519MixEnc(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string plaintext_hex = std::string(*param3);
         uint32_t plaintext_hex_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1388,8 +1612,18 @@ void x25519MixEnc(const FunctionCallbackInfo<Value> &args)
 
         if (encMsg.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str());
-            args.GetReturnValue().Set(returnEncMsg);
+            // Local<String> returnEncMsg = String::NewFromUtf8(isolate, encMsg.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnEncMsg);
+            Local<String> returnEncMsg;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, encMsg.c_str());
+            if (temp.ToLocal(&returnEncMsg))
+            {
+                args.GetReturnValue().Set(returnEncMsg);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1411,11 +1645,11 @@ void x25519MixDec(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param1(isolate, args[0]->ToString());
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string prikey_pem = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[1]->ToString());
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string peer_pubkey_hex = std::string(*param2);
-        v8::String::Utf8Value param3(isolate, args[2]->ToString());
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string enc_msg_str = std::string(*param3);
         uint32_t enc_msg_str_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1424,8 +1658,18 @@ void x25519MixDec(const FunctionCallbackInfo<Value> &args)
 
         if (plaintext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str());
-            args.GetReturnValue().Set(returnPlaintext);
+            // Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnPlaintext);
+            Local<String> returnPlainText;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, plaintext.c_str());
+            if (temp.ToLocal(&returnPlainText))
+            {
+                args.GetReturnValue().Set(returnPlainText);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1447,12 +1691,12 @@ void aesEncPw(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed_path = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param1);
         uint32_t pw_len = args[2]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
-        v8::String::Utf8Value param3(isolate, args[3]->ToString());
+        v8::String::Utf8Value param3(isolate, args[3]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string dst_path = std::string(*param3);
 
         //
@@ -1476,9 +1720,9 @@ void aesDecPw(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed_path = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string src_path = std::string(*param1);
 
         //
@@ -1486,8 +1730,18 @@ void aesDecPw(const FunctionCallbackInfo<Value> &args)
 
         if (p_retPw)
         {
-            Local<String> pw = String::NewFromUtf8(isolate, ((char *)p_retPw));
-            args.GetReturnValue().Set(pw);
+            // Local<String> pw = String::NewFromUtf8(isolate, ((char *)p_retPw)).ToLocalChecked();
+            // args.GetReturnValue().Set(pw);
+            Local<String> pw;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, (char *)p_retPw);
+            if (temp.ToLocal(&pw))
+            {
+                args.GetReturnValue().Set(pw);
+            }
+            else
+            {
+                // Error
+            }
 
             FREE_M(p_retPw);
         }
@@ -1511,11 +1765,11 @@ void aesEncFile(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string src_path = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string dst_path = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[2]->ToString());
+        v8::String::Utf8Value param2(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param2);
         uint32_t seed_len = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1540,9 +1794,9 @@ void aesDecFile(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string src_path = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 		uint32_t seed_len = args[2]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1551,8 +1805,18 @@ void aesDecFile(const FunctionCallbackInfo<Value> &args)
 
         if (p_plane)
         {
-            Local<String> p_plane_ = String::NewFromUtf8(isolate, ((char *)p_plane));
-            args.GetReturnValue().Set(p_plane_);
+            // Local<String> p_plane_ = String::NewFromUtf8(isolate, ((char *)p_plane)).ToLocalChecked();
+            // args.GetReturnValue().Set(p_plane_);
+            Local<String> p_plane_;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, (char *)p_plane);
+            if (temp.ToLocal(&p_plane_))
+            {
+                args.GetReturnValue().Set(p_plane_);
+            }
+            else
+            {
+                // Error
+            }
 
             FREE_M(p_plane);
         }
@@ -1576,9 +1840,9 @@ void aesDecBinary(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string enc_hex_str = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 		uint32_t seed_len = args[2]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1587,8 +1851,18 @@ void aesDecBinary(const FunctionCallbackInfo<Value> &args)
 
         if (p_plane)
         {
-            Local<String> p_plane_ = String::NewFromUtf8(isolate, ((char *)p_plane));
-            args.GetReturnValue().Set(p_plane_);
+            // Local<String> p_plane_ = String::NewFromUtf8(isolate, ((char *)p_plane)).ToLocalChecked();
+            // args.GetReturnValue().Set(p_plane_);
+            Local<String> p_plane_;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, (char *)p_plane);
+            if (temp.ToLocal(&p_plane_))
+            {
+                args.GetReturnValue().Set(p_plane_);
+            }
+            else
+            {
+                // Error
+            }
 
             FREE_M(p_plane);
         }
@@ -1612,9 +1886,9 @@ void aes256CbcEnc(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string plaintext_str = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 
         //
@@ -1625,8 +1899,18 @@ void aes256CbcEnc(const FunctionCallbackInfo<Value> &args)
 
         if (ciphertext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnCiphertext = String::NewFromUtf8(isolate, ciphertext.c_str());
-            args.GetReturnValue().Set(returnCiphertext);
+            // Local<String> returnCiphertext = String::NewFromUtf8(isolate, ciphertext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnCiphertext);
+            Local<String> returnCiphertext;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, ciphertext.c_str());
+            if (temp.ToLocal(&returnCiphertext))
+            {
+                args.GetReturnValue().Set(returnCiphertext);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1647,9 +1931,9 @@ void aes256CbcDec(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string ciphertext_hex_str = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 
         //
@@ -1660,8 +1944,18 @@ void aes256CbcDec(const FunctionCallbackInfo<Value> &args)
 
         if (plaintext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str());
-            args.GetReturnValue().Set(returnPlaintext);
+            // Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnPlaintext);
+            Local<String> returnPlaintext;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, plaintext.c_str());
+            if (temp.ToLocal(&returnPlaintext))
+            {
+                args.GetReturnValue().Set(returnPlaintext);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1683,9 +1977,9 @@ void ariaEnc(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string plaintext_str = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 
         //
@@ -1696,8 +1990,18 @@ void ariaEnc(const FunctionCallbackInfo<Value> &args)
 
         if (ciphertext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnCiphertext = String::NewFromUtf8(isolate, ciphertext.c_str());
-            args.GetReturnValue().Set(returnCiphertext);
+            // Local<String> returnCiphertext = String::NewFromUtf8(isolate, ciphertext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnCiphertext);
+            Local<String> returnCiphertext;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, ciphertext.c_str());
+            if (temp.ToLocal(&returnCiphertext))
+            {
+                args.GetReturnValue().Set(returnCiphertext);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1718,9 +2022,9 @@ void ariaDec(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string ciphertext_hex_str = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string seed = std::string(*param1);
 
         //
@@ -1731,8 +2035,18 @@ void ariaDec(const FunctionCallbackInfo<Value> &args)
 
         if (plaintext.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str());
-            args.GetReturnValue().Set(returnPlaintext);
+            // Local<String> returnPlaintext = String::NewFromUtf8(isolate, plaintext.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(returnPlaintext);
+            Local<String> returnPlaintext;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, plaintext.c_str());
+            if (temp.ToLocal(&returnPlaintext))
+            {
+                args.GetReturnValue().Set(returnPlaintext);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1754,7 +2068,7 @@ void genSha256Hex(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data_hex = std::string(*param0);
 
         //
@@ -1762,8 +2076,18 @@ void genSha256Hex(const FunctionCallbackInfo<Value> &args)
 
         if (hashStr.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retHashStr = String::NewFromUtf8(isolate, hashStr.c_str());
-            args.GetReturnValue().Set(retHashStr);
+            // Local<String> retHashStr = String::NewFromUtf8(isolate, hashStr.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retHashStr);
+            Local<String> retHashStr;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, hashStr.c_str());
+            if (temp.ToLocal(&retHashStr))
+            {
+                args.GetReturnValue().Set(retHashStr);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1784,7 +2108,7 @@ void genSha256Str(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param0);
 
         //
@@ -1792,8 +2116,18 @@ void genSha256Str(const FunctionCallbackInfo<Value> &args)
 
         if (hashStr.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retHashStr = String::NewFromUtf8(isolate, hashStr.c_str());
-            args.GetReturnValue().Set(retHashStr);
+            // Local<String> retHashStr = String::NewFromUtf8(isolate, hashStr.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retHashStr);
+            Local<String> retHashStr;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, hashStr.c_str());
+            if (temp.ToLocal(&retHashStr))
+            {
+                args.GetReturnValue().Set(retHashStr);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1836,7 +2170,7 @@ void charToUtf8(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param0);
 
         //
@@ -1844,8 +2178,18 @@ void charToUtf8(const FunctionCallbackInfo<Value> &args)
 
         if (mbsStr.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retMbsStr = String::NewFromUtf8(isolate, mbsStr.c_str());
-            args.GetReturnValue().Set(retMbsStr);
+            // Local<String> retMbsStr = String::NewFromUtf8(isolate, mbsStr.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retMbsStr);
+            Local<String> retMbsStr;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, mbsStr.c_str());
+            if (temp.ToLocal(&retMbsStr))
+            {
+                args.GetReturnValue().Set(retMbsStr);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1867,7 +2211,7 @@ void utf8Test(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string data = std::string(*param0);
 
         crt_wcstombs_test();
@@ -1909,11 +2253,11 @@ void keyCreateMasterChainCode(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[2]->ToString());
+        v8::String::Utf8Value param2(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param2);
 
         //
@@ -1937,11 +2281,11 @@ void keyRestoreMasterChainCode(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param1);
-        v8::String::Utf8Value param2(isolate, args[2]->ToString());
+        v8::String::Utf8Value param2(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic2 = std::string(*param2);
         uint32_t rand_num = args[3]->NumberValue(isolate->GetCurrent()->GetCurrentContext()).FromJust();
 
@@ -1950,8 +2294,18 @@ void keyRestoreMasterChainCode(const FunctionCallbackInfo<Value> &args)
 
         if (chainCodeStr.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retChainCodeStrStr = String::NewFromUtf8(isolate, chainCodeStr.c_str());
-            args.GetReturnValue().Set(retChainCodeStrStr);
+            // Local<String> retChainCodeStrStr = String::NewFromUtf8(isolate, chainCodeStr.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retChainCodeStrStr);
+            Local<String> retChainCodeStrStr;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, chainCodeStr.c_str());
+            if (temp.ToLocal(&retChainCodeStrStr))
+            {
+                args.GetReturnValue().Set(retChainCodeStrStr);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -1974,9 +2328,9 @@ void keyCreateMasterChainCodeOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param1);
 
         //
@@ -2000,9 +2354,9 @@ void keyRestoreMasterChainCodeOri(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string mnemonic1 = std::string(*param0);
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string pw = std::string(*param1);
 
         //
@@ -2010,8 +2364,19 @@ void keyRestoreMasterChainCodeOri(const FunctionCallbackInfo<Value> &args)
 
         if (masterChainCodeStr.compare(STR_ERROR_)) // SUCCESS
         {
-            Local<String> retMasterChainCodeStrStr = String::NewFromUtf8(isolate, masterChainCodeStr.c_str());
-            args.GetReturnValue().Set(retMasterChainCodeStrStr);
+            // Local<String> retMasterChainCodeStrStr = String::NewFromUtf8(isolate, masterChainCodeStr.c_str()).ToLocalChecked();
+            // Local<String> retMasterChainCodeStrStr = String::NewFromUtf8(isolate, masterChainCodeStr.c_str());
+            // args.GetReturnValue().Set(retMasterChainCodeStrStr);
+            Local<String> retMasterChainCodeStrStr;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, masterChainCodeStr.c_str());
+            if (temp.ToLocal(&retMasterChainCodeStrStr))
+            {
+                args.GetReturnValue().Set(retMasterChainCodeStrStr);
+            }
+            else
+            {
+                // Error
+            }
         }
         else
         {
@@ -2034,10 +2399,11 @@ void addonTest(const FunctionCallbackInfo<Value> &args)
         v8::Isolate *isolate = args.GetIsolate();
 
         //
-        v8::String::Utf8Value param0(isolate, args[0]->ToString());
+        v8::String::Utf8Value param0(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string str_1 = std::string(*param0);
 
-        v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        // v8::String::Utf8Value param1(isolate, args[1]->ToString());
+        v8::String::Utf8Value param1(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
         std::string str_2 = std::string(*param1);
         
 		// uint32_t num_1 = args[2]->NumberValue();
