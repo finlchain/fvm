@@ -49,6 +49,9 @@ extern std::string openssl_ed_prikey_pem2hex_proc(bool b_enc, std::string prikey
 extern std::string openssl_ed_pubkey_pem2hex_proc(std::string pubkey_path);
 
 //
+extern std::string openssl_ed_pubkey_pemstr2hex_proc(std::string pem_str);
+
+//
 extern int32_t openssl_ed25519_keygen_proc(std::string path);
 extern int32_t openssl_ed25519_keygen_pubkey_proc(std::string path);
 extern int32_t openssl_ed25519_keygen_fin_with_mnemonic_proc(std::string path, std::string pw, std::string mnemonic1, std::string mnemonic2, uint32_t rand_num, std::string seed, uint32_t seed_len);

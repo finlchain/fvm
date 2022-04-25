@@ -135,6 +135,30 @@ EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem_str(char *p_pem_str)
 }
 
 //
+EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem_str(char *p_pem_str)
+{
+    EVP_PKEY *p_pkey = NULL;
+    
+    if (p_pem_str)
+    {
+        BIO *pub_b = BIO_new_mem_buf((void*)p_pem_str, STRLEN_M((char *)p_pem_str));
+
+        if (pub_b)
+        {
+            p_pkey = PEM_read_bio_PUBKEY(pub_b, NULL, NULL, NULL);
+
+            BIO_free(pub_b);
+        }
+    }
+	else
+	{
+		return (NULL);
+	}
+
+    return (p_pkey);
+}
+
+//
 EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem(bool b_enc, char *p_prikey_path)
 {
     EVP_PKEY *p_pkey = NULL;
@@ -165,9 +189,62 @@ EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem(char *p_pubkey_path)
     EVP_PKEY *p_pkey = NULL;
     FILE *fp;
 
-    fp= fopen(p_pubkey_path, "r");
+    fp = fopen(p_pubkey_path, "r");
     if(fp)
     {
+        p_pkey = PEM_read_PUBKEY(fp, NULL, NULL, NULL);
+        
+        fclose(fp);
+    }
+    
+    return (p_pkey);
+}
+
+//
+EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem_no_file(bool b_enc, char *p_prikey_raw)
+{
+    EVP_PKEY *p_pkey = NULL;
+    
+    if (!b_enc)
+    {
+        FILE* fp;
+        
+        fp = tmpfile();
+        if (fp)
+        {
+            // DBG_PRINT(DBG_UTIL, DBG_INFO, (void *) "p_prikey_raw : (%s)\n", p_prikey_raw);
+            // fprintf(fp, p_prikey_raw);
+            fputs(p_prikey_raw, fp);
+            rewind(fp);
+
+            //
+            p_pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
+
+            fclose(fp);
+        }
+    }
+	else
+	{
+		return (NULL);
+	}
+
+    return (p_pkey);
+}
+
+EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem_no_file(char *p_pubkey_raw)
+{
+    EVP_PKEY *p_pkey = NULL;
+    FILE *fp;
+
+    fp = tmpfile();
+    if(fp)
+    {
+        // DBG_PRINT(DBG_UTIL, DBG_INFO, (void *) "p_pubkey_raw : (%s)\n", p_pubkey_raw);
+        // fprintf(fp, p_pubkey_raw);
+        fputs(p_pubkey_raw, fp);
+        rewind(fp);
+
+        //
         p_pkey = PEM_read_PUBKEY(fp, NULL, NULL, NULL);
         
         fclose(fp);

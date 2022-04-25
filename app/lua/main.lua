@@ -9,6 +9,11 @@ require 'test.tTimer'
 require 'test.tCurl'
 require 'test.tHttp'
 
+require 'test.tLoadScript'
+require 'test.tSec'
+require 'test.tGetKey'
+require 'test.tDsa'
+
 -- 
 require 'test.keyGen'
 require 'test.pwKeyEncDec'
@@ -30,8 +35,6 @@ require 'test.contractTxSecToken'
 require 'test.contractTxUtilToken'
 require 'test.contractCreateSc'
 require 'test.contractTxSc'
-require 'test.tLoadScript'
-require 'test.tSec'
 
 --
 function luaTest()
@@ -61,6 +64,8 @@ function luaConn(myTbl)
     -- tCurl.testCase();
     -- tSec.testCase();
     -- tHttp.testCase();
+    -- tGetKey.testCase();
+    -- tDsa.testCase();
 
     -- 
     -- keyGen.testCase();

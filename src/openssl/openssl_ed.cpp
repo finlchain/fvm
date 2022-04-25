@@ -40,6 +40,40 @@ int32_t openssl_ed_prikey_pemstr2hex(char *p_pem_str, uint8_t *p_prikey)
 }
 
 //
+int32_t openssl_ed_pubkey_pemstr2hex(char *p_pubkey_raw, uint8_t *p_pubkey)
+{
+    int32_t ret = ERROR_;
+
+#if (OPENSSL_111 == ENABLED)
+    EVP_PKEY *p_pkey;
+
+    DBG_PRINT(DBG_UTIL, DBG_TRACE, (void *)"(%s)\n",  __FUNCTION__);
+
+    // p_pkey = EVP_PKEY_new_read_PUBKEY_pem_no_file(p_pubkey_raw);
+    p_pkey = EVP_PKEY_new_read_PUBKEY_pem_str(p_pubkey_raw);
+    if (p_pkey)
+    {
+        int32_t pubkey_size = X25519_PUBLIC_KEY_LEN_;
+        uint8_t tmp_pubkey[X25519_PUBLIC_KEY_LEN_];
+        uint8_t *p_tmp_pubkey = tmp_pubkey;
+
+        EVP_PKEY_get_raw_public_key(p_pkey, p_tmp_pubkey, (size_t *)&pubkey_size);
+        DBG_DUMP(DBG_UTIL, DBG_NONE, (void *)"open pubkey pem2hex", p_tmp_pubkey, pubkey_size);
+
+        MEMCPY_M(p_pubkey, &tmp_pubkey, X25519_PUBLIC_KEY_LEN_);
+
+        EVP_PKEY_free(p_pkey);
+
+        ret = SUCCESS_;
+    }
+#elif (OPENSSL_102 == ENABLED)
+    //
+#endif // OPENSSL_111
+
+    return (ret);
+}
+
+//
 int32_t openssl_ed_prikey_pem2hex(bool b_enc, char *p_prikey_path, uint8_t *p_prikey)
 {
     int32_t ret = ERROR_;
@@ -73,7 +107,6 @@ int32_t openssl_ed_prikey_pem2hex(bool b_enc, char *p_prikey_path, uint8_t *p_pr
 
 //
 int32_t openssl_ed_pubkey_pem2hex(char *p_pubkey_path, uint8_t *p_pubkey)
-
 {
     int32_t ret = ERROR_;
 

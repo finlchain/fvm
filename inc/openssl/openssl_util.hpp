@@ -103,9 +103,12 @@ extern char *BN_bn2hex_z(const BIGNUM *a);
 
 //
 extern EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem_str(char *p_pem_str);
+extern EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem_str(char *p_pem_str);
 //
 extern EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem(bool b_enc, char *p_prikey_path);
 extern EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem(char *p_pubkey_path);
+extern EVP_PKEY *EVP_PKEY_new_read_PRIKEY_pem_no_file(bool b_enc, char *p_prikey_raw);
+extern EVP_PKEY *EVP_PKEY_new_read_PUBKEY_pem_no_file(char *p_pubkey_raw);
 extern EVP_PKEY *EVP_PKEY_new_read_PRIKEY_hex(char *p_prikey, int32_t ec_algo);
 extern EVP_PKEY *EVP_PKEY_new_read_PUBKEY_hex(char *p_pubkey, int32_t ec_algo);
 

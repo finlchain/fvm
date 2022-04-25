@@ -893,6 +893,42 @@ void eddsaSignPem(const FunctionCallbackInfo<Value> &args)
     }
 }
 
+void eddsaTestHex(const FunctionCallbackInfo<Value> &args)
+{
+    if (args.Length() != 3)
+    {
+        args.GetReturnValue().Set(false);
+    }
+    else
+    {
+        //
+        v8::Isolate *isolate = args.GetIsolate();
+
+        //
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+        std::string prikey = std::string(*param1);
+        v8::String::Utf8Value param2(isolate, args[1]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+        std::string pubkey = std::string(*param2);
+        v8::String::Utf8Value param3(isolate, args[2]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+        std::string data = std::string(*param3);
+
+        //
+        std::string signature = openssl_ed25519_sig_hex(prikey, data);
+
+        if (signature.compare(STR_ERROR_)) // SUCCESS
+        {
+            int32_t ret = openssl_ed25519_verify_hex(data, signature, pubkey);
+
+            if (ret == 0) args.GetReturnValue().Set(true);
+            else args.GetReturnValue().Set(false);
+        }
+        else
+        {
+            args.GetReturnValue().Set(false);
+        }
+    }
+}
+
 //
 void ecK1GetPrikey(const FunctionCallbackInfo<Value> &args)
 {
@@ -1097,7 +1133,48 @@ void ed25519GetPrikeyByPemStr(const FunctionCallbackInfo<Value> &args)
 }
 
 //
-void ed25519GetPrikey(const FunctionCallbackInfo<Value> &args)
+void ed25519GetPubkeyByPemStr(const FunctionCallbackInfo<Value> &args)
+{
+    if (args.Length() != 1)
+    {
+        args.GetReturnValue().Set(false);
+    }
+    else
+    {
+        //
+        v8::Isolate *isolate = args.GetIsolate();
+
+        //
+        v8::String::Utf8Value param1(isolate, args[0]->ToString(isolate->GetCurrent()->GetCurrentContext()).FromMaybe(v8::Local<v8::String>()));
+        std::string pem_str = std::string(*param1);
+
+        //
+        std::string pubkey = openssl_ed_pubkey_pemstr2hex_proc(pem_str);
+
+        if (pubkey.compare(STR_ERROR_)) // SUCCESS
+        {
+            // Local<String> retPubkey = String::NewFromUtf8(isolate, pubkey.c_str()).ToLocalChecked();
+            // args.GetReturnValue().Set(retPubkey);
+            Local<String> retPubkey;
+            v8::MaybeLocal<v8::String> temp = String::NewFromUtf8(isolate, pubkey.c_str());
+            if (temp.ToLocal(&retPubkey))
+            {
+                args.GetReturnValue().Set(retPubkey);
+            }
+            else
+            {
+                // Error
+            }
+        }
+        else
+        {
+            args.GetReturnValue().Set(false);
+        }
+    }
+}
+
+//
+void ed25519GetPrikeyWithPem(const FunctionCallbackInfo<Value> &args)
 {
     if (args.Length() != 1)
     {
@@ -1137,7 +1214,7 @@ void ed25519GetPrikey(const FunctionCallbackInfo<Value> &args)
     }
 }
 
-void ed25519GetPubkey(const FunctionCallbackInfo<Value> &args)
+void ed25519GetPubkeyWithPem(const FunctionCallbackInfo<Value> &args)
 {
     if (args.Length() != 1)
     {
@@ -2460,6 +2537,7 @@ void Initialize(Local<Object> exports, Local<Object> module)
     NODE_SET_METHOD(exports, "eddsaVerifyHex", eddsaVerifyHex);
     NODE_SET_METHOD(exports, "eddsaSignHex", eddsaSignHex);
     NODE_SET_METHOD(exports, "eddsaSignPem", eddsaSignPem);
+    NODE_SET_METHOD(exports, "eddsaTestHex", eddsaTestHex);
 
     //
     NODE_SET_METHOD(exports, "ecK1GetPrikey", ecK1GetPrikey);
@@ -2470,11 +2548,24 @@ void Initialize(Local<Object> exports, Local<Object> module)
     NODE_SET_METHOD(exports, "ecR1GetPubkey", ecR1GetPubkey);
 
     //
-    NODE_SET_METHOD(exports, "ed25519GetPrikeyByPemStr", ed25519GetPrikeyByPemStr);
+    NODE_SET_METHOD(exports, "ed25519GetPrikey", ed25519GetPrikeyWithPem);
+    NODE_SET_METHOD(exports, "ed25519GetPubkey", ed25519GetPubkeyWithPem);
 
     //
-    NODE_SET_METHOD(exports, "ed25519GetPrikey", ed25519GetPrikey);
-    NODE_SET_METHOD(exports, "ed25519GetPubkey", ed25519GetPubkey);
+    NODE_SET_METHOD(exports, "ed25519GetPrikeyWithPem", ed25519GetPrikeyWithPem);
+    NODE_SET_METHOD(exports, "ed25519GetPubkeyWithPem", ed25519GetPubkeyWithPem);
+
+    //
+    NODE_SET_METHOD(exports, "ed25519GetPrikeyByPemStr", ed25519GetPrikeyByPemStr);
+    NODE_SET_METHOD(exports, "ed25519GetPubkeyByPemStr", ed25519GetPubkeyByPemStr);
+
+    //
+    NODE_SET_METHOD(exports, "ed25519GetPrikeyNoFile", ed25519GetPrikeyByPemStr);
+    NODE_SET_METHOD(exports, "ed25519GetPubkeyNoFile", ed25519GetPubkeyByPemStr);
+
+    //
+    NODE_SET_METHOD(exports, "ed25519GetPrikeyWithRawPem", ed25519GetPrikeyByPemStr);
+    NODE_SET_METHOD(exports, "ed25519GetPubkeyWithRawPem", ed25519GetPubkeyByPemStr);
 
     //
     NODE_SET_METHOD(exports, "x25519KeyGenPemWithMnemonic", x25519KeyGenPemWithMnemonic);

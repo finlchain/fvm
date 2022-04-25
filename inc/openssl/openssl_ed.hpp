@@ -16,10 +16,11 @@ extern "C"
 
 //
 extern int32_t openssl_ed_prikey_pemstr2hex(char *p_pem_str, uint8_t *p_prikey);
-
+extern int32_t openssl_ed_pubkey_pemstr2hex(char *p_pubkey_raw, uint8_t *p_pubkey);
 //
 extern int32_t openssl_ed_prikey_pem2hex(bool b_enc, char *p_prikey_path, uint8_t *p_prikey);
 extern int32_t openssl_ed_pubkey_pem2hex(char *p_pubkey_path, uint8_t *p_pubkey);
+//
 extern int32_t openssl_ed_pubkey_hex2pem(char *p_pubkey_path, uint8_t *p_pubkey);
 
 #if (OPENSSL_111 == ENABLED)

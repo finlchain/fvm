@@ -746,6 +746,39 @@ static int eddsaSignPem(lua_State *L)
 }
 
 //
+static int eddsaTestHex(lua_State *L)
+{
+    if (lua_gettop(L) != 3)
+    {
+        std::cout << "Error : expecting exactly 3 arguments (string string)\n";
+    }
+    else
+    {
+        //
+        std::string prikey = std::string(luaL_checkstring(L, 1));
+        std::string pubkey = std::string(luaL_checkstring(L, 2));
+        std::string data = std::string(luaL_checkstring(L, 3));
+
+        //
+        std::string signature = openssl_ed25519_sig_hex(prikey, data);
+
+        if (signature.compare(STR_ERROR_)) // SUCCESS
+        {
+            int32_t ret = openssl_ed25519_verify_hex(data, signature, pubkey);
+
+            if (ret == 0) lua_pushboolean(L, true);
+            else lua_pushboolean(L, false);
+        }
+        else
+        {
+            lua_pushboolean(L, false);
+        }
+    }
+
+    return 1;
+}
+
+//
 static int ecK1GetPrikey(lua_State *L)
 {
     if (lua_gettop(L) != 1)
@@ -894,7 +927,37 @@ static int ed25519GetPrikeyByPemStr(lua_State *L)
 }
 
 //
-static int ed25519GetPrikey(lua_State *L)
+static int ed25519GetPubkeyByPemStr(lua_State *L)
+{
+    if (lua_gettop(L) != 1)
+    {
+        std::cout << "Error : expecting exactly 1 arguments (string)\n";
+    }
+    else
+    {
+        //
+        std::string pem_str = std::string(luaL_checkstring(L, 1));
+
+        //
+        std::string pubkey = openssl_ed_pubkey_pemstr2hex_proc(pem_str);
+
+        if (pubkey.compare(STR_ERROR_)) // SUCCESS
+        {
+            lua_pushstring(L, pubkey.c_str());
+
+            return 1;
+        }
+        else
+        {
+            std::cout << "Error : None Return Value\n";
+        }
+    }
+
+    return 0;
+}
+
+//
+static int ed25519GetPrikeyWithPem(lua_State *L)
 {
     if (lua_gettop(L) != 1)
     {
@@ -923,7 +986,7 @@ static int ed25519GetPrikey(lua_State *L)
     return 0;
 }
 
-static int ed25519GetPubkey(lua_State *L)
+static int ed25519GetPubkeyWithPem(lua_State *L)
 {
     if (lua_gettop(L) != 1)
     {
@@ -2078,7 +2141,8 @@ int32_t lua_addon (int argc, char *argv[])
     lua_register(L, "eddsaVerifyHex", eddsaVerifyHex);
     lua_register(L, "eddsaSignHex", eddsaSignHex);
     lua_register(L, "eddsaSignPem", eddsaSignPem);
-
+    lua_register(L, "eddsaTestHex", eddsaTestHex);
+    
     //
     lua_register(L, "ecK1GetPrikey", ecK1GetPrikey);
     lua_register(L, "ecK1GetPubkey", ecK1GetPubkey);
@@ -2088,11 +2152,24 @@ int32_t lua_addon (int argc, char *argv[])
     lua_register(L, "ecR1GetPubkey", ecR1GetPubkey);
 
     //
-    lua_register(L, "ed25519GetPrikeyByPemStr", ed25519GetPrikeyByPemStr);
+    lua_register(L, "ed25519GetPrikey", ed25519GetPrikeyWithPem);
+    lua_register(L, "ed25519GetPubkey", ed25519GetPubkeyWithPem);
 
     //
-    lua_register(L, "ed25519GetPrikey", ed25519GetPrikey);
-    lua_register(L, "ed25519GetPubkey", ed25519GetPubkey);
+    lua_register(L, "ed25519GetPrikeyWithPem", ed25519GetPrikeyWithPem);
+    lua_register(L, "ed25519GetPubkeyWithPem", ed25519GetPubkeyWithPem);
+
+    //
+    lua_register(L, "ed25519GetPrikeyByPemStr", ed25519GetPrikeyByPemStr);
+    lua_register(L, "ed25519GetPubkeyByPemStr", ed25519GetPubkeyByPemStr);
+
+    //
+    lua_register(L, "ed25519GetPrikeyNoFile", ed25519GetPrikeyByPemStr);
+    lua_register(L, "ed25519GetPubkeyNoFile", ed25519GetPubkeyByPemStr);
+
+    //
+    lua_register(L, "ed25519GetPrikeyWithRawPem", ed25519GetPrikeyByPemStr);
+    lua_register(L, "ed25519GetPubkeyWithRawPem", ed25519GetPubkeyByPemStr);
 
     //
     lua_register(L, "x25519KeyGenPemWithMnemonic", x25519KeyGenPemWithMnemonic);

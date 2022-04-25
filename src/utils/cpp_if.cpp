@@ -489,6 +489,33 @@ std::string openssl_ed_prikey_pemstr2hex_proc(std::string pem_str)
     return (prikey_str);
 }
 
+std::string openssl_ed_pubkey_pemstr2hex_proc(std::string pem_str)
+{
+    std::string pubkey_str = STR_ERROR_;
+
+    //
+    if (chkUndefinedStr(pem_str) == 0)
+    {
+        return (pubkey_str);
+    }
+
+    //
+    int32_t ret;
+    uint8_t pubkey[ED25519_PUBLIC_KEY_LEN_];
+
+    //
+    ret = openssl_ed_pubkey_pemstr2hex((char *)pem_str.c_str(), pubkey);
+
+    if (ret == SUCCESS_)
+    {
+        pubkey_str = ByteToHexString(pubkey, ED25519_PUBLIC_KEY_LEN_);
+    }
+
+    // // std::cout << "pubkey_str : " << pubkey_str << "\n";
+
+    return (pubkey_str);
+}
+
 //
 std::string openssl_ed_prikey_pem2hex_proc(bool b_enc, std::string prikey_path)
 {
